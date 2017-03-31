@@ -55,11 +55,13 @@ def generate_alert_definition(alert):
     }
     return attachment
 
+try:
+    # loop through the alerts in the JSON and send each separately to Slack. Note that stdout goes to the cloudera manager log(s).
+    alert_dict = { "attachments": [generate_alert_definition(alert) for alert in alertList] }
 
-# loop through the alerts in the JSON and send each separately to Slack. Note that stdout goes to the cloudera manager log(s).
-alert_dict = { "attachments": [generate_alert_definition(alert) for alert in alertList] }
+    req = urllib2.Request('https://hooks.slack.com/services/{0}'.format(slackToken))
+    req.add_header('Content-Type', 'application/json')
 
-req = urllib2.Request('https://hooks.slack.com/services/{0}'.format(slackToken))
-req.add_header('Content-Type', 'application/json')
-
-response = urllib2.urlopen(req, json.dumps(alert_dict))
+    response = urllib2.urlopen(req, json.dumps(alert_dict))
+except Exception as err:
+    raise Exception("Could not publish message, with error {0}, for message {1}".format(err,json.dumps(alertList)))
