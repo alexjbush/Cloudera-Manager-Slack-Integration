@@ -51,7 +51,7 @@ def generate_alert_definition(alert):
          ],
         "color": status_map[alert_status]["colour"],
         "ts": str(alert["body"]["alert"]["timestamp"]["epochMs"])[:-3],
-        "footer": "Cloudera Manager on {}".format(alert["body"]["alert"]["attributes"]["CLUSTER"][0])
+        "footer": "Cloudera Manager on {0}".format(alert["body"]["alert"]["attributes"]["CLUSTER_DISPLAY_NAME"][0])
     }
     return attachment
 
@@ -59,7 +59,7 @@ def generate_alert_definition(alert):
 # loop through the alerts in the JSON and send each separately to Slack. Note that stdout goes to the cloudera manager log(s).
 alert_dict = { "attachments": [generate_alert_definition(alert) for alert in alertList] }
 
-req = urllib2.Request('https://hooks.slack.com/services/{}'.format(slackToken))
+req = urllib2.Request('https://hooks.slack.com/services/{0}'.format(slackToken))
 req.add_header('Content-Type', 'application/json')
 
 response = urllib2.urlopen(req, json.dumps(alert_dict))
